@@ -10,3 +10,5 @@ Improvements:
 - Better use of lambda and Java sdk
 - Dao interface
 - BDD using cucumber
+- Split up larger methods such as bookSeats
+- Split InvalidArgumentException to more exceptions to handle exceptions more specifically

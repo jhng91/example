@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ShowServiceImpl implements IShowService {
     private final ShowDao showDao;
@@ -79,9 +80,14 @@ public class ShowServiceImpl implements IShowService {
         Optional<List<Ticket>> optionalTicketList = ticketDao.get(phoneNumber);
         List<Ticket> ticketList;
         if(optionalTicketList.isPresent()) {
-            throw new InvalidArgumentException("Booking already made on this number!");
+            ticketList = optionalTicketList.get();
+            List<Ticket> resultList = ticketList.stream().filter(
+                    ticket -> ticket.getShowNumber() == showNumber).toList();
+            if(resultList.size() > 0)
+                throw new InvalidArgumentException("Booking already made on this number for this show!");
         }
-        ticketList = new ArrayList<>();
+        else
+            ticketList = new ArrayList<>();
         ticketDao.save(phoneNumber, ticketList);
         ArrayList<Ticket> newTicketsList = new ArrayList<>();
         // book seats
@@ -138,7 +144,8 @@ public class ShowServiceImpl implements IShowService {
         ticketsMap.forEach((k, v) -> {
             output.append("Phone number: ").append(k).append(" Show number: ").append(showNumber).append(" Tickets: ");
             v.forEach(ticket -> {
-                output.append(ticket.getSeatAndRow()).append(" ");
+                if(ticket.getShowNumber() == showNumber)
+                    output.append(ticket.getNumber()).append(":").append(ticket.getSeatAndRow()).append(" ");
             });
             output.append("\n");
         });

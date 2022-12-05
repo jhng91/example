@@ -46,4 +46,11 @@ public class TestBookSeats {
         controller.bookSeats(1, "1234", "A1");
         assertThrows(InvalidArgumentException.class, () -> controller.bookSeats(1, "1234", "A2"));
     }
+    @Test
+    public void testBookSeatsPhoneNumberAlreadyBookedDifferentShows() throws InvalidArgumentException, ShowAlreadyExistsException, ShowNotFoundException, RowNotFoundException, SeatNotFoundException {
+        controller.setupShow(2, 10, 10, 1);
+        List<Ticket> ticketList = controller.bookSeats(1, "1234", "A1");
+        ticketList.addAll(controller.bookSeats(2, "1234", "A1"));
+        assertEquals(2, ticketList.size());
+    }
 }
